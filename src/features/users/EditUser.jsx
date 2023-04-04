@@ -1,9 +1,9 @@
-import { userParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { selectUserById } from './usersApiSlice'
 
 const EditUser = () => {
-  const { id } = userParams()
+  const { id } = useParams()
 
   const user = useSelector(state => selectUserById(state, id))
 
