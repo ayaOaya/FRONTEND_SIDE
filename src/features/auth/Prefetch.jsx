@@ -1,4 +1,4 @@
-import { Store } from "@reduxjs/toolkit";
+import { store } from "../../app/store";
 import { notesApiSlice } from "../notes/notesApiSlice";
 import { usersApiSlice } from "../users/usersApiSlice";
 import { useEffect } from "react";
