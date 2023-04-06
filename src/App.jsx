@@ -56,3 +56,6 @@ function App() {
 }
 
 export default App;
+
+// finish deployement 
+// fix the bugs 

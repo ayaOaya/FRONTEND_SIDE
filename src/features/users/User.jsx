@@ -1,12 +1,16 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPenSquare } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
-
-import { useSelector } from "react-redux";
-import { selectUserById } from "./usersApiSlice";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons"
+import { useNavigate } from 'react-router-dom'
+import { useGetUsersQuery } from './usersApiSlice'
+import { memo } from 'react'
 
 const User = ({ userId }) => {
-    const user = useSelector(state => selectUserById(state, userId))
+
+    const { user } = useGetUsersQuery("usersList", {
+        selectFromResult: ({ data }) => ({
+            user: data?.entities[userId]
+        }),
+    })
 
     const navigate = useNavigate()
 
@@ -15,7 +19,7 @@ const User = ({ userId }) => {
 
         const userRolesString = user.roles.toString().replaceAll(',', ', ')
 
-        const cellStatus = user.active ? '' : 'table_cell--inactive'
+        const cellStatus = user.active ? '' : 'table__cell--inactive'
 
         return (
             <tr className="table__row user">
@@ -23,10 +27,10 @@ const User = ({ userId }) => {
                 <td className={`table__cell ${cellStatus}`}>{userRolesString}</td>
                 <td className={`table__cell ${cellStatus}`}>
                     <button
-                    className="icon-button table__button" 
-                    onClick={handleEdit}
+                        className="icon-button table__button"
+                        onClick={handleEdit}
                     >
-                        <FontAwesomeIcon icon={faPenSquare} />
+                        <FontAwesomeIcon icon={faPenToSquare} />
                     </button>
                 </td>
             </tr>
@@ -35,4 +39,6 @@ const User = ({ userId }) => {
     } else return null
 }
 
-export default User 
+const memoizedUser = memo(User)
+
+export default memoizedUser

@@ -2,9 +2,8 @@ import {
     createSelector,
     createEntityAdapter
 } from "@reduxjs/toolkit";
-import { apiSlice } from "../../app/api/apiSlice";
+import { apiSlice } from "../../app/api/apiSlice"
 
-// Put the completed notes at the bottom 
 const notesAdapter = createEntityAdapter({
     sortComparer: (a, b) => (a.completed === b.completed) ? 0 : a.completed ? 1 : -1
 })
@@ -14,10 +13,12 @@ const initialState = notesAdapter.getInitialState()
 export const notesApiSlice = apiSlice.injectEndpoints({
     endpoints: builder => ({
         getNotes: builder.query({
-            query: () => '/notes',
-            validateStatus: ( response, result) => {
-                return response.status === 200 && !result.isError
-            },
+            query: () => ({
+                url: '/notes',
+                validateStatus: (response, result) => {
+                    return response.status === 200 && !result.isError
+                },
+            }),
             transformResponse: responseData => {
                 const loadedNotes = responseData.map(note => {
                     note.id = note._id
@@ -28,10 +29,10 @@ export const notesApiSlice = apiSlice.injectEndpoints({
             providesTags: (result, error, arg) => {
                 if (result?.ids) {
                     return [
-                        { type: 'note', id: 'LIST'},
-                        ...result.ids.map(id => ({ type: 'note', id}))
+                        { type: 'Note', id: 'LIST' },
+                        ...result.ids.map(id => ({ type: 'Note', id }))
                     ]
-                } else return [{ type: 'note', id: 'LIST'}]
+                } else return [{ type: 'Note', id: 'LIST' }]
             }
         }),
         addNewNote: builder.mutation({
@@ -43,7 +44,7 @@ export const notesApiSlice = apiSlice.injectEndpoints({
                 }
             }),
             invalidatesTags: [
-                { type: 'Note', id: 'LIST' }
+                { type: 'Note', id: "LIST" }
             ]
         }),
         updateNote: builder.mutation({
@@ -67,7 +68,7 @@ export const notesApiSlice = apiSlice.injectEndpoints({
             invalidatesTags: (result, error, arg) => [
                 { type: 'Note', id: arg.id }
             ]
-        })
+        }),
     }),
 })
 
@@ -78,19 +79,19 @@ export const {
     useDeleteNoteMutation,
 } = notesApiSlice
 
-//return the query result object
+// returns the query result object
 export const selectNotesResult = notesApiSlice.endpoints.getNotes.select()
 
-//create memoized selector
+// creates memoized selector
 const selectNotesData = createSelector(
     selectNotesResult,
     notesResult => notesResult.data // normalized state object with ids & entities
 )
 
-//getSlectors creates these selectors and we rename them with aliases using destructuring
+//getSelectors creates these selectors and we rename them with aliases using destructuring
 export const {
     selectAll: selectAllNotes,
     selectById: selectNoteById,
     selectIds: selectNoteIds
-    // Pass in a selector that returns the notes sllice of state
+    // Pass in a selector that returns the notes slice of state
 } = notesAdapter.getSelectors(state => selectNotesData(state) ?? initialState)
